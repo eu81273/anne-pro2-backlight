@@ -1,58 +1,82 @@
 const HID = require('node-hid');
 
-const { path } = HID.devices().filter(device => device.manufacturer === 'OBINLB').shift();
-const device = new HID.HID(path);
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-// uploadKbdLayer
-device.write([ 123, 16, 49, 16, 3, 1, 2, 125, 16, 2, 0 ]);
-// previewLightEffect
-device.write([ 123,
-    16,
-    65,
-    16,
-    40,
-    1,
-    2,
-    125,
-    32,
-    3,
-    0,
-    6,
-    255,
-    0,
-    0,
-    255,
-    128,
-    0,
-    255,
-    255,
-    0,
-    128,
-    255,
-    0,
-    0,
-    255,
-    0,
-    0,
-    255,
-    128, 
-    0,
-    255,
-    255,
-    0,
-    128,
-    255,
-    0,
-    0,
-    255,
-    128,
-    0,
-    255,
-    255,
-    0,
-    255,
-    255,
-    0,
-    128 ]);
+async function getDevices () {
+    return HID.devices()
+        .filter(device => device.manufacturer === 'OBINLB')
+        .map(({ path }) => {
+            try {
+                const device = new HID.HID(path);
 
-setTimeout(device.close.bind(device), 1000);
+                device.readTimeout(100);
+                device.on('data', _ => device.close() | process.kill(process.pid));
+                device.on('error', _ => null);
+
+                return device;
+            } catch (e) {
+                return null;
+            }
+        })
+        .filter(i => i);
+}
+
+! async function () {
+    const devices = await getDevices();
+
+    for (let device of devices) {
+        if (device) {
+            // previewLightEffect
+            device.write([ 123,
+                16,
+                65,
+                16,
+                40,
+                1,
+                2,
+                125,
+                32,
+                3,
+                0,
+                6,
+                255,
+                0,
+                0,
+                255,
+                128,
+                0,
+                255,
+                255,
+                0,
+                128,
+                255,
+                0,
+                0,
+                255,
+                0,
+                0,
+                255,
+                128,
+                0,
+                255,
+                255,
+                0,
+                128,
+                255,
+                0,
+                0,
+                255,
+                128,
+                0,
+                255,
+                255,
+                0,
+                255,
+                255,
+                0,
+                128 ]);
+        }
+    }
+} ()
