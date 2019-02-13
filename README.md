@@ -1,13 +1,13 @@
-# anne pro2 backlight script
+# anne pro2 backlight on/off script
 
 - only tested in macOS
-- only support rainbow lighting mode 
+- ~only support rainbow lighting mode~
 
 
 ```
 # install dependency
 $ npm install
 
-# set rainbow lighting mode
+# toggle lighting on/off
 $ node index.js
 ```

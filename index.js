@@ -7,7 +7,8 @@ function sleep(ms) {
 async function getDevices () {
     return HID.devices()
         .filter(device => device.manufacturer === 'OBINLB')
-        .map(({ path }) => {
+        .map(device => device.path)
+        .map(path => {
             try {
                 const device = new HID.HID(path);
 
@@ -28,55 +29,7 @@ async function getDevices () {
 
     for (let device of devices) {
         if (device) {
-            // previewLightEffect
-            device.write([ 123,
-                16,
-                65,
-                16,
-                40,
-                1,
-                2,
-                125,
-                32,
-                3,
-                0,
-                6,
-                255,
-                0,
-                0,
-                255,
-                128,
-                0,
-                255,
-                255,
-                0,
-                128,
-                255,
-                0,
-                0,
-                255,
-                0,
-                0,
-                255,
-                128,
-                0,
-                255,
-                255,
-                0,
-                128,
-                255,
-                0,
-                0,
-                255,
-                128,
-                0,
-                255,
-                255,
-                0,
-                255,
-                255,
-                0,
-                128 ]);
+            device.write([ 123, 16, 49, 16, 3, 1, 2, 125, 32, 1, 0 ]);
         }
     }
 } ()
